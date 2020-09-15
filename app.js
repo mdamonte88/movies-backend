@@ -5,12 +5,13 @@ const connectDB = require('./config/db');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const logger = require("morgan")
 connectDB();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(logger("dev"));
 
 app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/movies', require('./routes/api/movies_routes'));
