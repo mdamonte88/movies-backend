@@ -64,12 +64,20 @@ ControllerSchedule.get = async (req, res, next) =>
 ControllerSchedule.update = async (req, res, next) =>
 {
     try {
-        
         const scheduleId = req.params.schedule_id;
 
         ScheduleModel.findOne({ _id: scheduleId })
-        .then((schedule) => {
-            res.send({ schedule: schedule });
+        .then((schedule, err) => {
+            if(err)
+            {
+                var locals = {
+                    title:"Error al buscar el registro a modidicar con id: " + scheduleId,
+                    description:"Error de Sintaxis SQL",
+                    error:err
+                }
+        
+                res.send({error: locals});
+            } 
 
             if(!schedule) {
                 var locals = {
@@ -80,39 +88,21 @@ ControllerSchedule.update = async (req, res, next) =>
                 res.send({error: locals});
             }
             else {
-                console.log('SCHEDULE FOUND:', schedule);
-                /*
-                var movieUpdated = new ScheduleModel({
-                    id: movieId,
-                    name: req.body.name,
-                    date: req.body.date
-                });*/
-                
 
-                schedule.save().then((movieUpdated, err) => {
-                    res.send(movieUpdated)
+                schedule.shift = req.body.shift;
+                schedule.active = req.body.active;
+
+                schedule.save().then((scheduleUpdated, err) => {
+                    res.send(scheduleUpdated)
+                }).catch(err => {
+                    console.log(err);
                 })
             }
         })
-        .then((schedule, err) => {
-            if(err)
-            {
-                var locals = {
-                    title:"Error al agregar el registro con name: " + schedule.shift,
-                    description:"Error de Sintaxis SQL",
-                    error:err
-                }
-        
-                res.send({error: locals});
-            }
-    
-            res.send(schedule)
-        });
 
     } catch (err) {
         res.send({ message: "Server error", status: 500 });
     }
-    
 }
 
 ControllerSchedule.delete = async (req, res, next) =>
@@ -120,7 +110,7 @@ ControllerSchedule.delete = async (req, res, next) =>
     try {
         const scheduleId = req.params.schedule_id;
 
-        ScheduleModel.remove({ _id: scheduleId })
+        ScheduleModel.deleteOne({ _id: scheduleId })
         .then((schedule) => {
             res.send({ message: 'schedule was removed'})
         })
