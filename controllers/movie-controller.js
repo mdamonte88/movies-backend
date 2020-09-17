@@ -55,7 +55,6 @@ ControllerMovie.add = (req, res, next) =>
 ControllerMovie.get = async (req, res, next) =>
 {
     const movieId = req.params.movie_id;
-
     MovieModel.findOne({ _id: movieId }).then((movie) => {
         res.send({ movie: movie });
     });
@@ -68,8 +67,17 @@ ControllerMovie.update = async (req, res, next) =>
         const movieId = req.params.movie_id;
 
         MovieModel.findOne({ _id: movieId })
-        .then((movie) => {
-            res.send({ movie: movie });
+        .then((movie, err) => {
+            if(err)
+            {
+                var locals = {
+                    title:"Error al buscar el registro a modidicar con id: " + movieId,
+                    description:"Error de Sintaxis SQL",
+                    error:err
+                }
+        
+                res.send({error: locals});
+            } 
 
             if(!movie) {
                 var locals = {
@@ -80,34 +88,16 @@ ControllerMovie.update = async (req, res, next) =>
                 res.send({error: locals});
             }
             else {
-                console.log('MOVIE FOUND:', movie);
-                /*
-                var movieUpdated = new MovieModel({
-                    id: movieId,
-                    name: req.body.name,
-                    date: req.body.date
-                });*/
+                movie.name = req.body.name;
+                movie.date = req.body.date;
                 
-
                 movie.save().then((movieUpdated, err) => {
                     res.send(movieUpdated)
+                }).catch(err => {
+                    console.log(err);
                 })
             }
         })
-        .then((movie, err) => {
-            if(err)
-            {
-                var locals = {
-                    title:"Error al agregar el registro con name: " + movie.name,
-                    description:"Error de Sintaxis SQL",
-                    error:err
-                }
-        
-                res.send({error: locals});
-            }
-    
-            res.send(movie)
-        });
 
     } catch (err) {
         res.send({ message: "Server error", status: 500 });
@@ -120,7 +110,7 @@ ControllerMovie.delete = async (req, res, next) =>
     try {
         const movieId = req.params.movie_id;
 
-        MovieModel.remove({ _id: movieId })
+        MovieModel.deleteOne({ _id: movieId })
         .then((movie) => {
             res.send({ message: 'movie was removed'})
         })
