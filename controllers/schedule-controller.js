@@ -30,7 +30,7 @@ ControllerSchedule.add = (req, res, next) =>
     try {
         var schedule = new ScheduleModel({
             shift: req.body.shift,
-            date: req.body.active
+            active: req.body.active
         });
         
         schedule.save().then((scheduleAdded, err) => {
