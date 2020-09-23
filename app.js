@@ -1,15 +1,19 @@
-"use strict";
 
-const express = require('express');
-const connectDB = require('./config/db');
+import express from 'express';
+import connectDB from './config/db';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import logger from 'morgan';
+import path from 'path';
+
+
 const app = express();
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const logger = require("morgan");
-const path = require('path');
+
 
 connectDB();
-//Server build folder of a Frontend app in React
+
+// Folder wherer server will serve static files
+// Build folder is generated from a Frontend app in React
 app.use(express.static(path.join(__dirname, '/build')))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,7 +24,8 @@ app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/movies', require('./routes/api/movies_routes'));
 app.use('/api/schedules', require('./routes/api/schedules_routes'));
 
-//Redirect any requests that are caught by any of other Api routes should be passes on to our app
+/* Redirects any requests that are caught by any of other Api routes
+ should be passes on to our app such as images*/
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/build/index.html'))
 })
