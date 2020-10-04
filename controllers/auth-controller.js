@@ -2,7 +2,8 @@ var authModel = require("../models/user"),
 	errors = require("../middlewares/errors"),
     ControllerAuth = function () {};
 
-ControllerAuth.add = async function(req, res, next)
+
+ControllerAuth.add = async (req, res, next) =>
 {
         var user = new authModel({
             user_id:0,
@@ -13,8 +14,6 @@ ControllerAuth.add = async function(req, res, next)
             gender: req.body.gender
         });
         
-        console.log(user);
-
         user.save()
             .then((userAdded, err) => {
                 if(err)
@@ -37,11 +36,7 @@ ControllerAuth.add = async function(req, res, next)
             });
 }
 
-/*
-Fixme: 
-Do this method with Async await
-*/
-ControllerAuth.login = async function(req, res, next)
+ControllerAuth.login = async (req, res, next) =>
 {
     try {
         const { username, email, password } = req.body;
@@ -86,7 +81,7 @@ ControllerAuth.login = async function(req, res, next)
     }
 }
 
-ControllerAuth.logout = function(req, res, next)
+ControllerAuth.logout = async (req, res, next) =>
 {
     try {
         req.session.destroy(function (err){
