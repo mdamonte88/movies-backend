@@ -7,7 +7,9 @@ import session from 'express-session';
 import logger from 'morgan';
 
 import errors from './middlewares/errors';
-import auth from './routes/api/auth_routes';
+import authRoutes from './routes/api/auth_routes';
+import moviesRoutes from './routes/api/movies_routes';
+import schedulesRoutes from './routes/api/schedules_routes';
 
 import path from 'path';
 
@@ -40,13 +42,12 @@ app.use(logger("dev"));
 app.use(session({secret: "shhhhhhhh",saveUnititialized: true, resave: true})); 
 
 app.get('/', (req, res) => res.send('API Running'));
-app.use('/api/auth', require('./routes/api/auth_routes'));
-app.use('/api/movies', require('./routes/api/movies_routes'));
-app.use('/api/schedules', require('./routes/api/schedules_routes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/movies', moviesRoutes);
+app.use('/api/schedules', schedulesRoutes);
 
 
-//app.use(auth);
-//app.use(errors.http404);
+app.use(errors.http404);
 
 /* Redirects any requests that are caught by any of other Api routes
  should be passes on to our app such as images*/
